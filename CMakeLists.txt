@@ -158,7 +158,70 @@ endforeach()
 # Testing
 if(SCC_BUILD_TESTS)
     enable_testing()
-    add_subdirectory(tests)
+    
+    # 테스트 소스 파일들
+    set(TEST_SOURCES
+        tests/test_framework.c
+        tests/test_graph.c
+        tests/test_scc.c
+        tests/test_tarjan.c
+        tests/test_kosaraju.c
+        tests/test_memory.c
+        tests/test_utils.c
+        tests/test_io.c
+        tests/test_integration.c
+        tests/test_performance.c
+        tests/test_main.c
+    )
+    
+    # 테스트 실행 파일
+    add_executable(scc_test ${TEST_SOURCES})
+    target_link_libraries(scc_test ${SCC_MAIN_TARGET})
+    target_include_directories(scc_test PRIVATE 
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+    )
+    
+    # 수학 라이브러리 링크 (성능 테스트용)
+    if(UNIX)
+        target_link_libraries(scc_test m)
+    endif()
+    
+    # CTest 테스트들 정의
+    add_test(NAME AllTests COMMAND scc_test)
+    add_test(NAME GraphTests COMMAND scc_test graph)
+    add_test(NAME SCCTests COMMAND scc_test scc)
+    add_test(NAME TarjanTests COMMAND scc_test tarjan)
+    add_test(NAME KosarajuTests COMMAND scc_test kosaraju)
+    add_test(NAME MemoryTests COMMAND scc_test memory)
+    add_test(NAME UtilsTests COMMAND scc_test utils)
+    add_test(NAME IOTests COMMAND scc_test io)
+    add_test(NAME IntegrationTests COMMAND scc_test integration)
+    add_test(NAME PerformanceTests COMMAND scc_test performance)
+    
+    # 테스트 타임아웃 설정
+    set_tests_properties(AllTests PROPERTIES TIMEOUT 300)
+    set_tests_properties(IntegrationTests PROPERTIES TIMEOUT 120)
+    set_tests_properties(PerformanceTests PROPERTIES TIMEOUT 180)
+    
+    # 커스텀 타겟들
+    add_custom_target(check
+        COMMAND ${CMAKE_CTEST_COMMAND} --verbose
+        DEPENDS scc_test
+        COMMENT "Running all tests"
+    )
+    
+    add_custom_target(check-quick
+        COMMAND scc_test graph scc tarjan kosaraju memory
+        DEPENDS scc_test
+        COMMENT "Running core functionality tests"
+    )
+    
+    add_custom_target(check-performance
+        COMMAND scc_test performance
+        DEPENDS scc_test
+        COMMENT "Running performance benchmarks"
+    )
 endif()
 
 # Examples
