@@ -1,54 +1,54 @@
-# Strongly Connected Components (SCC) Implementation Architecture
+# 강한 연결 요소(SCC) 구현 아키텍처
 
-## Abstract
+## 초록
 
-This document presents a comprehensive architecture design for implementing Strongly Connected Components (SCC) algorithms in C. The design focuses on efficiency, modularity, and extensibility while providing multiple algorithm implementations including Kosaraju's and Tarjan's algorithms.
+이 문서는 C언어로 강한 연결 요소(SCC) 알고리즘을 구현하기 위한 포괄적인 아키텍처 설계를 제시합니다. 이 설계는 Kosaraju와 Tarjan 알고리즘을 포함한 여러 알고리즘 구현을 제공하면서 효율성, 모듈성, 확장성에 중점을 둡니다.
 
-## 1. Introduction
+## 1. 서론
 
-### 1.1 Problem Definition
-A strongly connected component in a directed graph is a maximal set of vertices such that there is a path from each vertex to every other vertex in the component. Finding all SCCs is fundamental in graph analysis with applications in compiler optimization, social network analysis, and circuit design.
+### 1.1 문제 정의
+방향 그래프에서 강한 연결 요소는 컴포넌트 내의 각 정점에서 다른 모든 정점으로의 경로가 존재하는 최대 정점 집합입니다. 모든 SCC를 찾는 것은 컴파일러 최적화, 소셜 네트워크 분석, 회로 설계 등에 응용되는 그래프 분석의 기본입니다.
 
-### 1.2 Design Goals
-- **Performance**: Optimize for large graphs with minimal memory overhead
-- **Modularity**: Separate graph representation from algorithm implementation
-- **Extensibility**: Support multiple SCC algorithms and graph formats
-- **Usability**: Provide clear APIs for integration into larger systems
+### 1.2 설계 목표
+- **성능**: 최소한의 메모리 오버헤드로 대형 그래프에 최적화
+- **모듈성**: 그래프 표현을 알고리즘 구현으로부터 분리
+- **확장성**: 여러 SCC 알고리즘과 그래프 형식 지원
+- **사용성**: 대형 시스템 통합을 위한 명확한 API 제공
 
-## 2. Algorithm Selection and Comparison
+## 2. 알고리즘 선택 및 비교
 
-### 2.1 Kosaraju's Algorithm
-**Time Complexity**: O(V + E)
-**Space Complexity**: O(V)
-**Advantages**:
-- Simple to implement and understand
-- Good cache locality
-- Easy to debug
+### 2.1 Kosaraju 알고리즘
+**시간 복잡도**: O(V + E)
+**공간 복잡도**: O(V)
+**장점**:
+- 구현과 이해가 간단
+- 좋은 캐시 지역성
+- 디버깅이 용이
 
-**Disadvantages**:
-- Requires two DFS passes
-- Needs transpose graph construction
+**단점**:
+- 두 번의 DFS 패스가 필요
+- 전치 그래프 구성 필요
 
-### 2.2 Tarjan's Algorithm
-**Time Complexity**: O(V + E)
-**Space Complexity**: O(V)
-**Advantages**:
-- Single DFS pass
-- No need for graph transpose
-- More memory efficient
+### 2.2 Tarjan 알고리즘
+**시간 복잡도**: O(V + E)
+**공간 복잡도**: O(V)
+**장점**:
+- 단일 DFS 패스
+- 그래프 전치 불필요
+- 더 효율적인 메모리 사용
 
-**Disadvantages**:
-- More complex implementation
-- Uses explicit stack management
+**단점**:
+- 더 복잡한 구현
+- 명시적 스택 관리 사용
 
-### 2.3 Recommended Approach
-**Primary**: Tarjan's algorithm for general use
-**Secondary**: Kosaraju's algorithm for educational purposes and debugging
-**Rationale**: Tarjan's single-pass approach is more memory efficient and faster in practice.
+### 2.3 권장 접근법
+**주요**: 일반적인 사용을 위한 Tarjan 알고리즘
+**보조**: 교육 목적 및 디버깅을 위한 Kosaraju 알고리즘
+**근거**: Tarjan의 단일 패스 접근법이 실제로 더 메모리 효율적이고 빠릅니다.
 
-## 3. System Architecture
+## 3. 시스템 아키텍처
 
-### 3.1 High-Level Architecture
+### 3.1 고수준 아키텍처
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
@@ -63,25 +63,25 @@ A strongly connected component in a directed graph is a maximal set of vertices 
 └─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-### 3.2 Component Breakdown
+### 3.2 컴포넌트 분석
 
-#### 3.2.1 Core Components
-1. **Graph Data Structure** (`graph.h`, `graph.c`)
-2. **SCC Algorithms** (`scc_tarjan.h`, `scc_kosaraju.h`)
-3. **API Interface** (`scc.h`, `scc.c`)
-4. **Memory Management** (`memory.h`, `memory.c`)
-5. **Utilities** (`utils.h`, `utils.c`)
+#### 3.2.1 핵심 컴포넌트
+1. **그래프 데이터 구조** (`graph.h`, `graph.c`)
+2. **SCC 알고리즘** (`scc_tarjan.h`, `scc_kosaraju.h`)
+3. **API 인터페이스** (`scc.h`, `scc.c`)
+4. **메모리 관리** (`memory.h`, `memory.c`)
+5. **유틸리티** (`utils.h`, `utils.c`)
 
-#### 3.2.2 Optional Components
-1. **Graph I/O** (`graph_io.h`, `graph_io.c`)
-2. **Visualization** (`visualize.h`, `visualize.c`)
-3. **Benchmarking** (`benchmark.h`, `benchmark.c`)
+#### 3.2.2 선택적 컴포넌트
+1. **그래프 I/O** (`graph_io.h`, `graph_io.c`)
+2. **시각화** (`visualize.h`, `visualize.c`)
+3. **벤치마킹** (`benchmark.h`, `benchmark.c`)
 
-## 4. Data Structures Design
+## 4. 데이터 구조 설계
 
-### 4.1 Graph Representation
+### 4.1 그래프 표현
 
-#### 4.1.1 Adjacency List Structure
+#### 4.1.1 인접 리스트 구조
 ```c
 typedef struct edge {
     int dest;

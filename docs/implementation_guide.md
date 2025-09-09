@@ -1,4 +1,4 @@
-# SCC Implementation Guide and Technical Specification
+# SCC 구현 가이드 및 기술 명세서
 
 ## Table of Contents
 1. [Introduction](#introduction)
