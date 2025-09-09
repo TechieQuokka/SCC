@@ -93,14 +93,14 @@ typedef struct vertex {
     edge_t* edges;
     int out_degree;
     
-    // Tarjan-specific fields
+    // Tarjan 전용 필드
     int index;
     int lowlink;
     bool on_stack;
     
-    // General purpose
+    // 일반 목적
     bool visited;
-    void* data;  // User data
+    void* data;  // 사용자 데이터
 } vertex_t;
 
 typedef struct graph {
@@ -109,13 +109,13 @@ typedef struct graph {
     int num_edges;
     int capacity;
     
-    // Memory management
+    // 메모리 관리
     struct memory_pool* vertex_pool;
     struct memory_pool* edge_pool;
 } graph_t;
 ```
 
-#### 4.1.2 SCC Result Structure
+#### 4.1.2 SCC 결과 구조
 ```c
 typedef struct scc_component {
     int* vertices;
@@ -126,18 +126,18 @@ typedef struct scc_component {
 typedef struct scc_result {
     scc_component_t* components;
     int num_components;
-    int* vertex_to_component;  // Mapping array
+    int* vertex_to_component;  // 매핑 배열
     
-    // Statistics
+    // 통계
     int largest_component_size;
     int smallest_component_size;
     double average_component_size;
 } scc_result_t;
 ```
 
-### 4.2 Algorithm-Specific Structures
+### 4.2 알고리즘별 구조
 
-#### 4.2.1 Tarjan's Algorithm State
+#### 4.2.1 Tarjan 알고리즘 상태
 ```c
 typedef struct tarjan_state {
     int* stack;
@@ -149,7 +149,7 @@ typedef struct tarjan_state {
 } tarjan_state_t;
 ```
 
-#### 4.2.2 Kosaraju's Algorithm State
+#### 4.2.2 Kosaraju 알고리즘 상태
 ```c
 typedef struct kosaraju_state {
     int* finish_order;
@@ -161,52 +161,52 @@ typedef struct kosaraju_state {
 } kosaraju_state_t;
 ```
 
-## 5. API Design
+## 5. API 설계
 
-### 5.1 Core API Functions
+### 5.1 핵심 API 함수
 
-#### 5.1.1 Graph Management
+#### 5.1.1 그래프 관리
 ```c
-// Graph creation and destruction
+// 그래프 생성 및 소멸
 graph_t* graph_create(int initial_capacity);
 void graph_destroy(graph_t* graph);
 
-// Graph modification
+// 그래프 수정
 int graph_add_vertex(graph_t* graph);
 int graph_add_edge(graph_t* graph, int src, int dest);
 int graph_remove_edge(graph_t* graph, int src, int dest);
 
-// Graph queries
+// 그래프 쿼리
 bool graph_has_edge(const graph_t* graph, int src, int dest);
 int graph_get_out_degree(const graph_t* graph, int vertex);
 ```
 
-#### 5.1.2 SCC Computation
+#### 5.1.2 SCC 계산
 ```c
-// Main SCC functions
+// 주요 SCC 함수
 scc_result_t* scc_find_tarjan(const graph_t* graph);
 scc_result_t* scc_find_kosaraju(const graph_t* graph);
-scc_result_t* scc_find(const graph_t* graph);  // Default algorithm
+scc_result_t* scc_find(const graph_t* graph);  // 기본 알고리즘
 
-// Result management
+// 결과 관리
 void scc_result_destroy(scc_result_t* result);
 ```
 
-#### 5.1.3 Utility Functions
+#### 5.1.3 유틸리티 함수
 ```c
-// Result analysis
+// 결과 분석
 int scc_get_component_count(const scc_result_t* result);
 int scc_get_component_size(const scc_result_t* result, int component_id);
 int scc_get_vertex_component(const scc_result_t* result, int vertex);
 
-// Graph properties
+// 그래프 속성
 bool scc_is_strongly_connected(const graph_t* graph);
 graph_t* scc_build_condensation_graph(const graph_t* graph, const scc_result_t* scc);
 ```
 
-### 5.2 Advanced API
+### 5.2 고급 API
 
-#### 5.2.1 Streaming/Online Processing
+#### 5.2.1 스트리밍/온라인 처리
 ```c
 typedef struct scc_incremental {
     graph_t* graph;
@@ -219,9 +219,9 @@ int scc_incremental_add_edge(scc_incremental_t* scc_inc, int src, int dest);
 const scc_result_t* scc_incremental_get_result(scc_incremental_t* scc_inc);
 ```
 
-## 6. Memory Management Strategy
+## 6. 메모리 관리 전략
 
-### 6.1 Memory Pool Design
+### 6.1 메모리 풀 설계
 ```c
 typedef struct memory_block {
     void* data;
@@ -238,14 +238,14 @@ typedef struct memory_pool {
 } memory_pool_t;
 ```
 
-### 6.2 Allocation Strategy
-- **Small allocations**: Use memory pools for vertices and edges
-- **Large allocations**: Direct malloc/free for result structures
-- **Stack allocations**: Use for temporary algorithm state when possible
+### 6.2 할당 전략
+- **작은 할당**: 정점과 간선에 메모리 풀 사용
+- **큰 할당**: 결과 구조에 직접 malloc/free 사용
+- **스택 할당**: 가능한 경우 임시 알고리즘 상태에 사용
 
-## 7. Error Handling
+## 7. 오류 처리
 
-### 7.1 Error Codes
+### 7.1 오류 코드
 ```c
 typedef enum {
     SCC_SUCCESS = 0,
@@ -257,85 +257,85 @@ typedef enum {
 } scc_error_t;
 ```
 
-### 7.2 Error Handling Pattern
+### 7.2 오류 처리 패턴
 ```c
 scc_result_t* result = scc_find_tarjan(graph);
 if (!result) {
     int error = scc_get_last_error();
-    fprintf(stderr, "SCC computation failed: %s\n", scc_error_string(error));
+    fprintf(stderr, "SCC 계산 실패: %s\n", scc_error_string(error));
     return -1;
 }
 ```
 
-## 8. Performance Considerations
+## 8. 성능 고려사항
 
-### 8.1 Time Complexity Analysis
-- **Graph Creation**: O(V) for vertex allocation, O(1) amortized for edge addition
-- **Tarjan's Algorithm**: O(V + E) with low constant factors
-- **Memory Access Patterns**: Optimized for cache locality
+### 8.1 시간 복잡도 분석
+- **그래프 생성**: 정점 할당에 O(V), 간선 추가에 분할상환 O(1)
+- **Tarjan 알고리즘**: 낮은 상수 인수를 가진 O(V + E)
+- **메모리 접근 패턴**: 캐시 지역성에 최적화
 
-### 8.2 Space Complexity
-- **Graph Storage**: O(V + E) for adjacency lists
-- **Algorithm Overhead**: O(V) for Tarjan's state
-- **Result Storage**: O(V) for component mapping
+### 8.2 공간 복잡도
+- **그래프 저장**: 인접 리스트에 O(V + E)
+- **알고리즘 오버헤드**: Tarjan 상태에 O(V)
+- **결과 저장**: 컴포넌트 매핑에 O(V)
 
-### 8.3 Optimization Strategies
-1. **Memory Layout**: Structure packing and alignment
-2. **Cache Optimization**: Breadth-first edge traversal where possible  
-3. **Branch Prediction**: Minimize conditional branches in hot paths
-4. **SIMD**: Potential for vectorized operations in dense graphs
+### 8.3 최적화 전략
+1. **메모리 레이아웃**: 구조체 패킹 및 정렬
+2. **캐시 최적화**: 가능한 경우 너비 우선 간선 순회
+3. **분기 예측**: 핫 패스에서 조건부 분기 최소화
+4. **SIMD**: 밀집 그래프에서 벡터화 연산 가능성
 
-## 9. Testing Strategy
+## 9. 테스팅 전략
 
-### 9.1 Test Categories
-1. **Unit Tests**: Individual function correctness
-2. **Integration Tests**: Algorithm end-to-end testing
-3. **Performance Tests**: Scalability and timing benchmarks
-4. **Stress Tests**: Large graph handling and memory limits
+### 9.1 테스트 범주
+1. **단위 테스트**: 개별 함수 정확성
+2. **통합 테스트**: 알고리즘 end-to-end 테스팅
+3. **성능 테스트**: 확장성 및 타이밍 벤치마크
+4. **스트레스 테스트**: 대형 그래프 처리 및 메모리 한계
 
-### 9.2 Test Cases
-- Empty graphs
-- Single vertex graphs
-- Trivial SCCs (single vertices)
-- Complex SCCs with cycles
-- Large randomly generated graphs
-- Real-world graph datasets
+### 9.2 테스트 케이스
+- 빈 그래프
+- 단일 정점 그래프
+- 단순한 SCC (단일 정점)
+- 사이클이 있는 복잡한 SCC
+- 대규모 무작위 생성 그래프
+- 실제 그래프 데이터셋
 
-## 10. Build System and Dependencies
+## 10. 빌드 시스템 및 종속성
 
-### 10.1 Build Configuration
-- **Compiler**: GCC 9.0+ or Clang 10.0+
-- **Standards**: C99 minimum, C11 recommended
-- **Build System**: CMake 3.15+
-- **Dependencies**: None (self-contained implementation)
+### 10.1 빌드 구성
+- **컴파일러**: GCC 9.0+ 또는 Clang 10.0+
+- **표준**: C99 최소, C11 권장
+- **빌드 시스템**: CMake 3.15+
+- **종속성**: 없음 (독립적인 구현)
 
-### 10.2 Compilation Flags
+### 10.2 컴파일 플래그
 ```cmake
 set(CMAKE_C_FLAGS_RELEASE "-O3 -DNDEBUG -march=native")
 set(CMAKE_C_FLAGS_DEBUG "-O0 -g -fsanitize=address -fsanitize=undefined")
 ```
 
-## 11. Usage Examples and Integration
+## 11. 사용 예제 및 통합
 
-### 11.1 Basic Usage
+### 11.1 기본 사용법
 ```c
 #include "scc.h"
 
 int main() {
     graph_t* graph = graph_create(100);
     
-    // Add vertices and edges
+    // 정점과 간선 추가
     graph_add_edge(graph, 0, 1);
     graph_add_edge(graph, 1, 2);
     graph_add_edge(graph, 2, 0);
     
-    // Find SCCs
+    // SCC 찾기
     scc_result_t* result = scc_find(graph);
     
-    printf("Found %d strongly connected components\n", 
+    printf("%d개의 강한 연결 요소를 찾았습니다\n", 
            scc_get_component_count(result));
     
-    // Cleanup
+    // 정리
     scc_result_destroy(result);
     graph_destroy(graph);
     
@@ -343,49 +343,49 @@ int main() {
 }
 ```
 
-### 11.2 Advanced Usage
+### 11.2 고급 사용법
 ```c
-// Process large graph with custom memory management
+// 사용자 정의 메모리 관리로 대형 그래프 처리
 graph_t* graph = graph_create_with_pools(1000000, vertex_pool, edge_pool);
 scc_result_t* result = scc_find_tarjan(graph);
 
-// Analyze results
+// 결과 분석
 for (int i = 0; i < result->num_components; i++) {
     if (result->components[i].size > 100) {
-        printf("Large component %d has %d vertices\n", 
+        printf("큰 컴포넌트 %d는 %d개의 정점을 가집니다\n", 
                i, result->components[i].size);
     }
 }
 
-// Build condensation graph
+// 축약 그래프 구축
 graph_t* condensed = scc_build_condensation_graph(graph, result);
 ```
 
-## 12. Future Extensions
+## 12. 향후 확장
 
-### 12.1 Planned Features
-1. **Parallel SCC**: Multi-threaded implementations
-2. **External Memory**: Support for graphs larger than RAM
-3. **Dynamic Updates**: Efficient incremental SCC maintenance
-4. **GPU Acceleration**: CUDA/OpenCL implementations
+### 12.1 계획된 기능
+1. **병렬 SCC**: 멀티스레드 구현
+2. **외부 메모리**: RAM보다 큰 그래프 지원
+3. **동적 업데이트**: 효율적인 증분 SCC 유지
+4. **GPU 가속**: CUDA/OpenCL 구현
 
-### 12.2 Research Directions
-1. **Approximate SCCs**: Trade accuracy for speed in massive graphs
-2. **Distributed SCCs**: Cross-machine graph processing
-3. **Persistent Data Structures**: Functional graph updates
+### 12.2 연구 방향
+1. **근사 SCC**: 대규모 그래프에서 속도를 위한 정확성 교환
+2. **분산 SCC**: 다중 머신 그래프 처리
+3. **영구 데이터 구조**: 함수형 그래프 업데이트
 
-## 13. Conclusion
+## 13. 결론
 
-This architecture provides a solid foundation for high-performance SCC computation in C. The modular design allows for easy extension and optimization while maintaining code clarity and correctness. The dual algorithm approach (Tarjan + Kosaraju) provides both performance and educational value.
+이 아키텍처는 C에서 고성능 SCC 계산을 위한 견고한 기반을 제공합니다. 모듈형 설계는 코드의 명확성과 정확성을 유지하면서 쉬운 확장과 최적화를 가능하게 합니다. 이중 알고리즘 접근법(Tarjan + Kosaraju)은 성능과 교육적 가치를 모두 제공합니다.
 
-The implementation prioritizes:
-- **Correctness**: Comprehensive testing and clear algorithms
-- **Performance**: Optimized data structures and memory management  
-- **Usability**: Clean APIs and good documentation
-- **Maintainability**: Modular design and consistent coding standards
+구현에서 우선시하는 사항:
+- **정확성**: 포괄적인 테스팅과 명확한 알고리즘
+- **성능**: 최적화된 데이터 구조와 메모리 관리
+- **사용성**: 깔끔한 API와 좋은 문서화
+- **유지보수성**: 모듈형 설계와 일관된 코딩 표준
 
 ---
 
-*Document Version: 1.0*  
-*Last Updated: 2025-09-09*  
-*Author: Claude Code Assistant*
+*문서 버전: 1.0*  
+*최종 업데이트: 2025-09-09*  
+*작성자: Claude Code Assistant*
