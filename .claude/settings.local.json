@@ -9,7 +9,17 @@
       "Bash(git remote add:*)",
       "Bash(git --version)",
       "Bash(gh:*)",
-      "Bash(git remote remove:*)"
+      "Bash(git remote remove:*)",
+      "Bash(powershell:*)",
+      "Bash(cmake:*)",
+      "Bash(cl simple_test.c:*)",
+      "Bash(gcc:*)",
+      "Bash(./quick_test.exe)",
+      "Bash(dir)",
+      "Bash(./simple_test.exe)",
+      "Bash(make:*)",
+      "Bash(./comprehensive_test.exe)",
+      "Bash(./stress_test.exe)"
     ],
     "deny": [],
     "ask": []
